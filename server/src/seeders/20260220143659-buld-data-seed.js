@@ -13,7 +13,7 @@ module.exports = {
     await queryInterface.bulkInsert('Users', [
       { id: userIds[0], name: 'Admin Utama', email: 'admin@hris.com', password, role: 'ADMIN', baseSalary: 10000000, createdAt: new Date(), updatedAt: new Date() },
       { id: userIds[1], name: 'Budi Manager', email: 'budi@hris.com', password, role: 'STAFF', baseSalary: 8000000, createdAt: new Date(), updatedAt: new Date() },
-      { id: userIds[2], name: 'Siti Staff', email: 'siti@hris.com', password, role: 'STAFF', baseSalary: 5000000, createdAt: new Date(), updatedAt: new Date() }
+      { id: userIds[2], name: 'Siti Staff', email: 'siti@hris.com', password, role: 'STAFF', managerId : userIds[1] ,baseSalary: 5000000, createdAt: new Date(), updatedAt: new Date() }
     ]);
 
     // 2. DATA ATTENDANCES (Absensi)
