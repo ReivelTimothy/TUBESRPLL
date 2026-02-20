@@ -13,6 +13,9 @@ RUN npm install
 # Install Sequelize CLI secara global agar bisa running migrasi di container
 RUN npm install -g sequelize-cli
 
+# migrate database tables
+
+
 # Copy seluruh kode sumber server
 COPY . .
 
