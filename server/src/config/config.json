@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "reivel_user",
+    "password": "password123",
+    "database": "tubes_db",
+    "host": "db",
+    "dialect": "postgres"
+  }
+}

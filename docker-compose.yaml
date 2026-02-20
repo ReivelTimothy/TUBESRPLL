@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tubesrpll_db
+    restart: always
+    environment:
+      POSTGRES_USER: reivel_user
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: tubes_db
+    ports:
+      - "5432:5432"
+
+  server:
+    build: ./server
+    container_name: tubesrpll_server
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_NAME: tubes_db
+      DB_USER: reivel_user
+      DB_PASS: password123
+      JWT_SECRET: "rahasia_anda"
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules 
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    container_name: tubesrpll_client
+    ports:
+      - "80:80"
