@@ -12,7 +12,8 @@ module.exports = {
       managerId: { type: Sequelize.UUID, allowNull: true, references: { model: 'Users', key: 'id' }, onUpdate: 'CASCADE', onDelete: 'SET NULL' },
       baseSalary: { type: Sequelize.FLOAT, defaultValue: 0 },
       createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
+      deviceId: {type: Sequelize.STRING, allowNull: true,  unique: true }
     });
   },
   down: async (queryInterface) => { await queryInterface.dropTable('Users', { cascade: true }); }
