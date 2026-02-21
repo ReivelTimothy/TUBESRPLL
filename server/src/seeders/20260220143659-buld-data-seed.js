@@ -19,8 +19,7 @@ module.exports = {
     // 2. DATA ATTENDANCES (Absensi)
     await queryInterface.bulkInsert('Attendances', [
       { id: uuidv4(), userId: userIds[0], checkIn: new Date(), status: 'PRESENT', createdAt: new Date(), updatedAt: new Date() },
-      { id: uuidv4(), userId: userIds[1], checkIn: new Date(), status: 'PRESENT', createdAt: new Date(), updatedAt: new Date() },
-      { id: uuidv4(), userId: userIds[2], checkIn: new Date(), status: 'LATE', createdAt: new Date(), updatedAt: new Date() }
+     
     ]);
 
     // 3. DATA PENALTIES (Denda Barang Rusak/Terlambat)
