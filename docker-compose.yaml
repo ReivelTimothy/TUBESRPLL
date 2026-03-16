@@ -14,7 +14,7 @@ services:
   server:
     build: ./server
     container_name: tubesrpll_server
-    entrypoint: ["sh", "-c", "sleep 10 && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"]
+    entrypoint: ["sh", "-c", "sleep 10 && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && node src/index.js"]
     ports:
       - "5000:5000"
     environment:
@@ -24,8 +24,8 @@ services:
       DB_PASS: password123
       JWT_SECRET: "rahasia_anda"
     volumes:
-      - ./server:/usr/src/app
-      - /usr/src/app/node_modules 
+      - ./server:/app
+      - /app/node_modules 
     depends_on:
       - db
 

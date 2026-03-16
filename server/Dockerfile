@@ -24,4 +24,4 @@ EXPOSE 3000
 
 # Command untuk menjalankan aplikasi
 # Kita gunakan node src/index.js (sesuaikan jika file utama kamu berbeda)
-CMD ["node", "index.js"]
+CMD npx sequelize-cli db:migrate && node src/index.js
