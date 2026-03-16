@@ -37,8 +37,7 @@ Thumbs.db
 *.swo
 
 # Sequelize artifacts
-# Jangan abaikan migrations/seeders, tapi abaikan temporary files jika ada
-.sequelizerc
+
 
 # Mobile (React Native) specific
 /mobile-app/android/app/build
