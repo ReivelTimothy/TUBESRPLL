@@ -23,6 +23,7 @@ out/
 .env.production.local
 server/src/config/config.json # Jika config.json berisi password asli, abaikan ini
 server/tsconfig.json
+server/config/config.json
 # Docker
 .dockerignore
 
