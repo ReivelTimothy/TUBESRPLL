@@ -11,10 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Install Sequelize CLI secara global agar bisa running migrasi di container
-RUN npm install -g sequelize-cli
-
-# migrate database tables
-
+RUN npm install -g sequelize-cli ts-node typescript
 
 # Copy seluruh kode sumber server
 COPY . .
@@ -24,4 +21,4 @@ EXPOSE 3000
 
 # Command untuk menjalankan aplikasi
 # Kita gunakan node src/index.js (sesuaikan jika file utama kamu berbeda)
-CMD npx sequelize-cli db:migrate && node src/index.js
+CMD ["node", "src/app.ts"]
