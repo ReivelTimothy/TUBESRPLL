@@ -1,58 +1,53 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+
 // @ts-ignore
 import db from './models';
 import attendanceRoute from './routes/attendanceRoute';
+import authRoute from './routes/authRoute';
 
-// Inisialisasi dotenv
-dotenv.config();
+// Load .env agar terbaca di Docker
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
+const port = process.env.PORT || 5000;
 
-
-const port = process.env.PORT || 1111;
-
-// 1. MIDDLEWARE UTAMA
+// --- 1. MIDDLEWARE ---
 app.use(express.json());
-
-// Konfigurasi CORS menggunakan .env
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true, // Tambahkan ini jika nanti pakai Cookie/Session (HCRM project)
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: [
+    'http://localhost',      // Origin dari error kamu
+    'http://localhost:80',   // Origin alternatif
+    'http://localhost:3000', // Jika kamu pakai React dev server (Vite/CRA)
+    'http://127.0.0.1'       // Untuk jaga-jaga
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
-// 2. ROUTES
+// --- 2. ROUTES ---
 app.get('/', (req: Request, res: Response) => {
-    res.json({ message: 'Welcome to HCRM API' });
+    res.json({ success: true, message: 'CRM API is Running' });
 });
 
 app.use('/attendance', attendanceRoute);
+app.use('/auth', authRoute);
 
-// 3. GLOBAL ERROR HANDLER (Harus paling bawah)
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error('🔥 Error Stack:', err.stack);
-    const statusCode = err.statusCode || 500;
-    res.status(statusCode).json({ 
-        success: false,
-        message: err.message || 'Internal Server Error' 
-    });
-});
-
-// 4. DATABASE CONNECTION & SERVER START
-// Menggunakan sync() opsional jika kamu ingin Sequelize otomatis urus tabel (tapi kamu pakai migrasi, jadi authenticate cukup)
+// --- 3. DATABASE & SERVER START ---
 db.sequelize.authenticate()
     .then(() => {
-        console.log('✅ Berhasil terhubung ke database PostgreSQL.');
-        
+        console.log('✅ PostgreSQL Connected.');
         app.listen(port, () => {
             console.log(`🚀 Server running on port ${port}`);
-            console.log(`📡 Accepting requests from: ${process.env.CLIENT_URL || 'muhahahah'}`);
+            console.log(`📡 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
         });
     })
     .catch((err: any) => {
-        console.error('❌ Tidak bisa terhubung ke database:', err);
+        console.error('❌ Database Connection Error:', err);
         process.exit(1); 
     });
+
+export default app;
