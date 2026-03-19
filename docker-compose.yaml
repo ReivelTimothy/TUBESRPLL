@@ -31,7 +31,6 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
-    # Menunggu database benar-benar "Healthy" sebelum menjalankan server
     depends_on:
       db:
         condition: service_healthy
@@ -43,7 +42,12 @@ services:
     build: ./client
     container_name: tubesrpll_client
     ports:
-      - "80:80"
+      - "80:80" 
+    volumes:
+      - ./client:/app 
+      - /app/node_modules 
+    environment:
+      - CHOKIDAR_USEPOLLING=true 
     networks:
       - tubes_network
 
