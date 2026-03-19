@@ -1,20 +1,32 @@
 export enum UserRole {
   ADMIN = 'ADMIN',
-  STAFF = 'STAFF'
+  STAFF = 'STAFF',
 }
 
 export interface UserAttributes {
-  id: string; 
+  id: string;
   name: string;
   email: string;
-  password?: string; 
-  role: UserRole;
-  managerId: string | null;
-  baseSalary: number;
+  password?: string;
+  role: 'ADMIN' | 'STAFF';
+  managerId?: string | null;
+  baseSalary?: number;
   
-  currentChallenge?: string | null; 
-  devices?: string | any[]; 
+  // WebAuthn Fields
+  credentialId?: string | null;
+  publicKey?: string | null;
+  counter?: number; 
+  
+  // Device & Network
+  deviceId?: string | null;
+  registeredIp?: string | null;
   
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface TokenPayload {
+  userId: string;
+  role: UserRole;
+}
+
