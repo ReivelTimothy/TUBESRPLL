@@ -2,41 +2,56 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { globalErrorHandler } from './middleware/errorHandler';
 
-// @ts-ignore
 import db from './models';
-import attendanceRoute from './routes/attendanceRoute';
 import authRoute from './routes/authRoute';
+import leaveRoute from './routes/leaveRoute';
+import penaltyRoute from './routes/penaltyRoute';
+import reimburseRoute from './routes/reimburseRoute';
+import userRoute from './routes/userRoute';
 
 // Load .env agar terbaca di Docker
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 5000;
+const uploadsPath = path.resolve(process.cwd(), 'uploads');
 
 // --- 1. MIDDLEWARE ---
 app.use(express.json());
 app.use(cors({
     origin: [
-    'http://localhost',      // Origin dari error kamu
-    'http://localhost:80',   // Origin alternatif
-    'http://localhost:3000', // Jika kamu pakai React dev server (Vite/CRA)
-    'http://127.0.0.1'       // Untuk jaga-jaga
+    'http://localhost',
+    // ngrok urls
+    'https://contortioned-terrell-gymnastically.ngrok-free.dev ', 
+    'https://bridgette-shroudless-rolf.ngrok-free.dev',      
+    // masukin aja semua biar ga pusing 
+    'http://localhost:80',  
+    'http://localhost:3000',
+    'http://127.0.0.1',
+    'http://localhost:5173/'  
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 
+// Serve uploaded files for receipt preview
+app.use('/uploads', express.static(uploadsPath));
+
 // --- 2. ROUTES ---
 app.get('/', (req: Request, res: Response) => {
-    res.json({ success: true, message: 'CRM API is Running' });
+    res.json({ success: true, message: 'Asek Jalan sir' });
 });
 
-app.use('/attendance', attendanceRoute);
 app.use('/auth', authRoute);
+app.use('/user', userRoute);
+app.use('/leave', leaveRoute);
+app.use('/reimburse', reimburseRoute);
+app.use('/penalty', penaltyRoute);
+app.use(globalErrorHandler);
 
-// --- 3. DATABASE & SERVER START ---
 db.sequelize.authenticate()
     .then(() => {
         console.log('✅ PostgreSQL Connected.');

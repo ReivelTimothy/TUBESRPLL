@@ -1,13 +1,11 @@
-// server/src/middleware/auth_middleware.ts
-import { Request, Response } from 'express';
+import { Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/jwtHelper';
 import { middlewareWrapper } from '../utils/middlewareWrapper';
-import { TokenPayload } from '../types/user';
 import { ApiError } from '../utils/apiError';
 import { ERROR_CODES } from '../utils/errorCodes';
+import { TokenPayloadRequest } from '../types/auth'; 
 
-
-export const authenticateJWT = middlewareWrapper(async (req: Request, res: Response) => {
+export const authenticateJWT = middlewareWrapper(async (req: TokenPayloadRequest, res: Response) => {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) { 
@@ -15,18 +13,16 @@ export const authenticateJWT = middlewareWrapper(async (req: Request, res: Respo
         throw new ApiError(err.code, err.message);
     }
 
-    const decoded = verifyToken(token) as TokenPayload;
+    const decoded = verifyToken(token);
+
     if (!decoded) { 
         const err = ERROR_CODES.AUTH.INVALID_TOKEN;
         throw new ApiError(err.code, err.message);
     }
 
-    if (!req.body) { 
-        const err = ERROR_CODES.AUTH.INVALID_TOKEN;
-        throw new ApiError(err.code, err.message);
-    } 
-
-    req.body.userId = decoded.userId;
-    req.body.role = decoded.role;
+    req.user = {
+        userId: decoded.userId, 
+        role: decoded.role
+    };
     
 });

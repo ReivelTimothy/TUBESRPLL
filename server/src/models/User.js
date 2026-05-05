@@ -6,27 +6,22 @@ module.exports = (sequelize, DataTypes) => {
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { isEmail: true } },
     password: { type: DataTypes.STRING, allowNull: false },
-    role: { type: DataTypes.ENUM('ADMIN', 'STAFF'), defaultValue: 'STAFF' },
-    // Kolom WebAuthn & Security
-    credentialId: { type: DataTypes.TEXT, allowNull: true, unique: true },
-    publicKey: { type: DataTypes.TEXT, allowNull: true },
-    counter: { type: DataTypes.INTEGER, defaultValue: 0 },
-    deviceId: { type: DataTypes.STRING, allowNull: true, unique: true },
-    registeredIp: { type: DataTypes.STRING, allowNull: true },
-    // Kolom Struktur & Payroll
-    managerId: { type: DataTypes.UUID, allowNull: true },
-    baseSalary: { type: DataTypes.FLOAT, defaultValue: 0 }
+    role: { type: DataTypes.ENUM('ADMIN', 'STAFF', 'MANAGER'), defaultValue: 'STAFF' },
+    managerId: { type: DataTypes.UUID, allowNull: true, references: { model: 'Users', key: 'id' } },
+    baseSalary: { type: DataTypes.FLOAT, defaultValue: 0 },
+    createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    updatedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
   }, {
     tableName: 'Users',
     timestamps: true
   });
 
   User.associate = (models) => {
-    // Relasi User Tree (Self-referencing)
+    
     User.belongsTo(models.User, { as: 'Manager', foreignKey: 'managerId' });
     User.hasMany(models.User, { as: 'Subordinates', foreignKey: 'managerId' });
     
-    // Relasi Modul HCRM (dengan alias 'as' agar query lebih mudah)
+    
     if (models.Attendance) User.hasMany(models.Attendance, { foreignKey: 'userId', as: 'Attendances' });
     if (models.Penalty) User.hasMany(models.Penalty, { foreignKey: 'userId', as: 'Penalties' });
     if (models.Leave) User.hasMany(models.Leave, { foreignKey: 'userId', as: 'Leaves' });

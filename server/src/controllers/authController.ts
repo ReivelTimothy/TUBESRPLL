@@ -1,13 +1,17 @@
+import { Request } from 'express';
 import * as authService from '../services/authService';
 import { controllerWrapper } from '../utils/controllerWrapper';
 
-export const login = controllerWrapper(async (req: any, res: any) => {
-    const { email, password } = req.body;
+export const loginController = controllerWrapper(async (req: Request) => {
+    const result = await authService.login(req.body);
+    return result;
+});
 
-    const data = await authService.authenticateUser(email, password);
+export const registerController = controllerWrapper(async (req: Request) => {
+    const result = await authService.register(req.body);
+    return { result };
+});
 
-    return {
-        message: "Berhasil login",
-        data
-    };
+export const forgetPassword = controllerWrapper(async (req: Request) => {
+    const data = req.body;
 });

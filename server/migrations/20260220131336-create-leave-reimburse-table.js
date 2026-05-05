@@ -10,7 +10,9 @@ module.exports = {
       type: { type: Sequelize.STRING },
       startDate: { type: Sequelize.DATE },
       endDate: { type: Sequelize.DATE },
+      reason: { type: Sequelize.STRING },
       status: { type: Sequelize.STRING, defaultValue: 'PENDING' },
+      processedBy: { type: Sequelize.UUID, allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false }
     });
@@ -21,6 +23,7 @@ module.exports = {
       amount: { type: Sequelize.FLOAT },
       description: { type: Sequelize.STRING },
       status: { type: Sequelize.STRING, defaultValue: 'PENDING' },
+      processedBy: { type: Sequelize.UUID, allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false }
     });

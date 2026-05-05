@@ -1,46 +1,52 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider, useSelector } from 'react-redux';
-import { store, RootState } from './store/store';
-import { LoginPage } from './pages/login';
-import Dashboard from './pages/dashboard'; // Asumsi kamu sudah buat file-nya
+import { Navigate, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import ProtectedRoute from './routes/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
+import DashboardLayout from './layouts/DashboardLayout';
+import DashboardHome from './pages/dashboard/DashboardHome';
+import ProfilePage from './pages/profile/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
+import UserManagementPage from './pages/admin/UserManagement';
+import LeavePage from './pages/leave/LeavePage';
+import ReimbursePage from './pages/reimburse/ReimbursePage';
+import PenaltyPage from './pages/penalty/PenaltyPage';
 
-// Komponen Pembungkus untuk proteksi halaman
-const ProtectedRoute = ({ children } : ProtectedRouteProps) => {
-  // Mengambil status login langsung dari Redux Reducer 'auth'
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  return isAuthenticated ? children : <Navigate to="/login" />;
+const RootRedirect = () => {
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!user?.role) return <Navigate to="/login" replace />;
+
+  return <Navigate to="/dashboard" replace />;
 };
 
 function App() {
   return (
-    // Provider menghubungkan "Store" ke seluruh komponen di dalamnya
-    <Provider store={store}>  
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Routes>
-            {/* Halaman Login */}
-            <Route path="/login" element={<LoginPage />} />
+    <Routes>
+      <Route path="/" element={<RootRedirect />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-            {/* Halaman Dashboard (Hanya bisa dibuka jika sudah Login) */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
+      <Route element={<ProtectedRoute allowedRoles={["ADMIN","MANAGER","STAFF"]} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardHome />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/leave" element={<LeavePage />} />
+          <Route path="/reimburse" element={<ReimbursePage />} />
+          <Route path="/penalty" element={<PenaltyPage />} />
 
-            {/* Redirect otomatis */}
-            <Route path="/" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
-      </Router>
-    </Provider>
+          <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+            <Route path="/admin/users" element={<UserManagementPage />} />
+          </Route>
+        </Route>
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

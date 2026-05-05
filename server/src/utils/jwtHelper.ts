@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { TokenPayload } from '../types/user';
-
+import { TokenPayload } from '../types/auth';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'fallback_secret_untuk_dev';
 
-export const generateToken = (userId: string) => {
-  return jwt.sign({ id: userId }, SECRET_KEY, {
+// Menggunakan interface TokenPayload sebagai parameter
+export const generateToken = (payload: TokenPayload): string => {
+  return jwt.sign(payload, SECRET_KEY, {
     expiresIn: '24h',
   });
 };

@@ -1,32 +1,41 @@
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  STAFF = 'STAFF',
-}
+// server/src/types/user.ts
+import { msgResponse } from "./general";
+import { UserRole } from './enum'; 
 
 export interface UserAttributes {
   id: string;
   name: string;
   email: string;
-  password?: string;
-  role: 'ADMIN' | 'STAFF';
+  role: UserRole;
   managerId?: string | null;
   baseSalary?: number;
-  
-  // WebAuthn Fields
-  credentialId?: string | null;
-  publicKey?: string | null;
-  counter?: number; 
-  
-  // Device & Network
-  deviceId?: string | null;
-  registeredIp?: string | null;
-  
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface TokenPayload {
-  userId: string;
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password?: string;
   role: UserRole;
+  managerId?: string;
+  baseSalary?: number;
 }
 
+export interface UpdateUserRequest {
+  name?: string;
+  role?: UserRole;
+  managerId?: string | null;
+  baseSalary?: number;
+}
+
+export interface UpdateProfileRequest {
+  phone?: string;
+  address?: string;
+  photo?: string;
+}
+
+export interface UserActionResponse extends msgResponse {
+  userId?: string;
+  user?: Partial<UserAttributes>;
+}

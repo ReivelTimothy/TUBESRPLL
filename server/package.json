@@ -12,6 +12,8 @@
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.0",
+    "@types/multer": "^2.1.0",
+    "base64url": "^3.0.1",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
@@ -21,6 +23,7 @@
     "express": "^5.2.1",
     "geolib": "^3.3.4",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
     "pg": "^8.18.0",
     "pg-hstore": "^2.3.4",
     "qrcode": "^1.5.4",

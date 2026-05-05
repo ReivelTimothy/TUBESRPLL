@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Penalty.associate = (models) => {
-    Penalty.belongsTo(models.User, { foreignKey: 'userId' });
+    Penalty.belongsTo(models.User, { foreignKey: 'userId', as: 'User' });
   };
 
   return Penalty;
