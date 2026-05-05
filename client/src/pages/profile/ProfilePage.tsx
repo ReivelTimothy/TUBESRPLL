@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import userService from '../../services/userService';
+import { useSearchParams } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const queryId = searchParams.get('id') || '';
   const [targetId, setTargetId] = useState(user?.id || '');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -29,6 +32,11 @@ const ProfilePage: React.FC = () => {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    // If a query id is provided, default to it (view mode). Otherwise default to current user.
+    if (queryId) setTargetId(queryId);
+  }, [queryId, user]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -102,13 +110,16 @@ const ProfilePage: React.FC = () => {
           </label>
 
           <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-70"
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save Profile'}
-            </button>
+            {/* Only allow saving when editing own profile or when Admin */}
+            {((user?.role === 'ADMIN') || (targetId === user?.id)) && (
+              <button
+                type="submit"
+                className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-70"
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : 'Save Profile'}
+              </button>
+            )}
             {status && <p className="text-sm text-slate-700">{status}</p>}
           </div>
         </form>

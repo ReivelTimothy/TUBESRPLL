@@ -7,6 +7,9 @@ export interface UserAttributes {
   name: string;
   email: string;
   role: UserRole;
+  address?: string | null;
+  phone?: string | null;
+  photo?: string | null;
   managerId?: string | null;
   baseSalary?: number;
   createdAt?: Date;

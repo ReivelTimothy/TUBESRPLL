@@ -5,13 +5,16 @@ module.exports = (sequelize, DataTypes) => {
     userId: { type: DataTypes.UUID, allowNull: false },
     type: { type: DataTypes.STRING }, // e.g., 'DAMAGED_PROPERTY'
     amount: { type: DataTypes.FLOAT, allowNull: false },
-    description: { type: DataTypes.TEXT },
+    description: { type: DataTypes.TEXT, allowNull: false },
+    date: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+    createdBy: { type: DataTypes.UUID, allowNull: false },
     attachment: { type: DataTypes.STRING }, // URL Foto bukti rusak
     status: { type: DataTypes.ENUM('PENDING', 'APPROVED', 'REJECTED'), defaultValue: 'PENDING' }
   });
 
   Penalty.associate = (models) => {
     Penalty.belongsTo(models.User, { foreignKey: 'userId', as: 'User' });
+    Penalty.belongsTo(models.User, { foreignKey: 'createdBy', as: 'Creator' });
   };
 
   return Penalty;

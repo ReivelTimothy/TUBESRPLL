@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Users } from 'lucide-react';
 import { buildTreeFromFlat, TreeNode, getTreeDepth, countNodes } from '../utils/treeTransform';
 
@@ -12,6 +13,9 @@ interface UserNode {
 interface NodeProps {
   node: TreeNode;
   level: number;
+  onEdit?: (userId: string) => void;
+  currentUserRole?: string;
+  currentUserId?: string;
 }
 
 // Color scheme for different hierarchy levels (cycles)
@@ -28,10 +32,13 @@ const LEVEL_COLORS = [
  * Recursive Tree Node Component
  * Supports infinite nesting with collapse/expand, visual hierarchy, and interactive features
  */
-const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
+const TreeNodeComponent: React.FC<NodeProps> = ({ node, level, onEdit, currentUserRole, currentUserId }) => {
   const [isExpanded, setIsExpanded] = useState(level < 2); // Auto-expand first 2 levels
   const hasChildren = node.subordinates.length > 0;
   const colors = LEVEL_COLORS[level % LEVEL_COLORS.length];
+  const navigate = useNavigate();
+  const isOwn = currentUserId && node.id === currentUserId;
+  const isManagerOrAdmin = node.role === 'MANAGER' || node.role === 'ADMIN';
 
   return (
     <div className="mb-0.5">
@@ -64,7 +71,9 @@ const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
         {/* Node card */}
         <div className="flex-1">
           <div
-            className={`flex items-center gap-3 rounded-lg border-2 ${colors.bg} ${colors.border} px-3 py-2 transition-all hover:shadow-md`}
+            className={`flex items-center gap-3 rounded-lg border-2 ${colors.bg} ${colors.border} px-3 py-2 transition-all hover:shadow-md ${
+              isManagerOrAdmin ? 'ring-1 ring-offset-1 ring-amber-50' : ''
+            }`}
           >
             {/* Role badge */}
             <div
@@ -79,12 +88,18 @@ const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
 
             {/* Name and subordinate count */}
             <div className="flex-1">
-              <div className="font-semibold text-slate-900">{node.name}</div>
-              {hasChildren && (
-                <div className="text-xs text-slate-500">
-                  {node.subordinates.length} direct report{node.subordinates.length !== 1 ? 's' : ''}
-                </div>
-              )}
+              <button
+                onClick={() => navigate(`/profile${node.id ? `?id=${node.id}` : ''}`)}
+                className="text-left"
+                aria-label={`View profile for ${node.name}`}
+              >
+                <div className="font-semibold text-slate-900">{node.name}{isOwn ? ' (You)' : ''}</div>
+                {hasChildren && (
+                  <div className="text-xs text-slate-500">
+                    {node.subordinates.length} direct report{node.subordinates.length !== 1 ? 's' : ''}
+                  </div>
+                )}
+              </button>
             </div>
 
             {/* Total subordinates (if expanded and has children) */}
@@ -92,6 +107,19 @@ const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
               <div className="flex items-center gap-1 rounded-full bg-white/60 px-2 py-0.5 text-xs font-medium text-slate-600">
                 <Users size={12} />
                 <span>{node.subordinates.length}</span>
+              </div>
+            )}
+
+            {/* Admin action */}
+            {/* Admin-only edit button; everyone can view by clicking the name above */}
+            {currentUserRole === 'ADMIN' && (
+              <div className="ml-2">
+                <button
+                  onClick={() => onEdit && onEdit(node.id)}
+                  className="rounded px-2 py-1 text-xs font-medium text-white bg-brand-600 hover:bg-brand-700"
+                >
+                  Edit
+                </button>
               </div>
             )}
           </div>
@@ -122,7 +150,7 @@ const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
                   width: '1rem',
                 }}
               />
-              <TreeNodeComponent node={subordinate} level={level + 1} />
+              <TreeNodeComponent node={subordinate} level={level + 1} onEdit={onEdit} currentUserRole={currentUserRole} />
             </div>
           ))}
         </div>
@@ -133,6 +161,8 @@ const TreeNodeComponent: React.FC<NodeProps> = ({ node, level }) => {
 
 interface Props {
   tree: UserNode[];
+  currentUserRole?: string;
+  onEdit?: (userId: string) => void;
 }
 
 /**
@@ -140,7 +170,7 @@ interface Props {
  * Renders an organizational hierarchy with infinite nesting support
  * Features: collapse/expand, visual hierarchy, tree statistics, scrollable container
  */
-const UserTree: React.FC<Props> = ({ tree }) => {
+const UserTree: React.FC<Props> = ({ tree, currentUserRole, onEdit }) => {
   // Transform flat user array into nested tree structure
   const nestedTree = useMemo(() => buildTreeFromFlat(tree), [tree]);
 
@@ -192,7 +222,7 @@ const UserTree: React.FC<Props> = ({ tree }) => {
       {/* Tree container with scrolling support */}
       <div className="space-y-1 overflow-x-auto overflow-y-auto rounded-lg border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-4" style={{ maxHeight: '600px' }}>
         {nestedTree.map((root) => (
-          <TreeNodeComponent key={root.id} node={root} level={0} />
+          <TreeNodeComponent key={root.id} node={root} level={0} onEdit={onEdit} currentUserRole={currentUserRole} />
         ))}
       </div>
 

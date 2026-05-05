@@ -10,6 +10,7 @@ import leaveRoute from './routes/leaveRoute';
 import penaltyRoute from './routes/penaltyRoute';
 import reimburseRoute from './routes/reimburseRoute';
 import userRoute from './routes/userRoute';
+import staffRoute from './routes/staffRoute';
 
 // Load .env agar terbaca di Docker
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -47,9 +48,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/auth', authRoute);
 app.use('/user', userRoute);
+app.use('/staff', staffRoute);
+app.use('/api/staff', staffRoute);
 app.use('/leave', leaveRoute);
 app.use('/reimburse', reimburseRoute);
 app.use('/penalty', penaltyRoute);
+app.use('/penalties', penaltyRoute);
+app.use('/api/penalties', penaltyRoute);
 app.use(globalErrorHandler);
 
 db.sequelize.authenticate()

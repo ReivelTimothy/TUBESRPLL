@@ -13,6 +13,11 @@ export const createPenalty = async (issuer: TokenPayload, data: CreatePenaltyReq
         throw new ApiError(ERROR_CODES.PENALTY.INVALID_AMOUNT.code, ERROR_CODES.PENALTY.INVALID_AMOUNT.message);
     }
 
+    const description = (data.description || data.reason || '').trim();
+    if (!description) {
+        throw new ApiError(ERROR_CODES.SYSTEM.VALIDATION_ERROR.code, 'Deskripsi penalti wajib diisi.');
+    }
+
     if (issuer.userId === data.userId) {
         throw new ApiError(ERROR_CODES.PENALTY.CANT_PENALIZE_SELF.code, ERROR_CODES.PENALTY.CANT_PENALIZE_SELF.message);
     }
@@ -25,7 +30,10 @@ export const createPenalty = async (issuer: TokenPayload, data: CreatePenaltyReq
     }
 
     const penalty = await Penalty.create({
-        ...data,
+        userId: data.userId,
+        amount: data.amount,
+        type: data.type,
+        description,
         createdBy: issuer.userId,
         date: data.date || new Date()
     });
@@ -39,7 +47,8 @@ export const createPenalty = async (issuer: TokenPayload, data: CreatePenaltyReq
 export const getPenalties = async (currentUser: TokenPayload) => {
     if (currentUser.role === 'ADMIN') {
         return await Penalty.findAll({
-            include: [{ model: User, as: 'User', attributes: ['name'] }]
+            include: [{ model: User, as: 'User', attributes: ['id', 'name', 'managerId'] }],
+            order: [['date', 'DESC']]
         });
     }
 
@@ -49,14 +58,16 @@ export const getPenalties = async (currentUser: TokenPayload) => {
                 model: User,
                 as: 'User',
                 where: { managerId: currentUser.userId },
-                attributes: ['name']
-            }]
+                attributes: ['id', 'name', 'managerId']
+            }],
+            order: [['date', 'DESC']]
         });
     }
 
     return await Penalty.findAll({
         where: { userId: currentUser.userId },
-        include: [{ model: User, as: 'User', attributes: ['name'] }]
+        include: [{ model: User, as: 'User', attributes: ['id', 'name', 'managerId'] }],
+        order: [['date', 'DESC']]
     });
 };
 

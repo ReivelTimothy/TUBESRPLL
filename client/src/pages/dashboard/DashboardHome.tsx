@@ -1,9 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import UserTree from '../../components/UserTree';
+import userService from '../../services/userService';
+import type { UserAttributes } from '../../types/types';
 
 const DashboardHome: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [tree, setTree] = useState<UserAttributes[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const t = await userService.getUserTree();
+        setTree(t || []);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   const cards = [
     { title: 'Leave', to: '/leave', description: 'Submit and monitor leave requests.' },
@@ -24,6 +40,14 @@ const DashboardHome: React.FC = () => {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-700">Active Role</p>
           <p className="mt-2 text-xl font-bold text-brand-900">{user?.role}</p>
           <p className="mt-2 text-sm text-brand-800">Access is automatically scoped by role-based permissions.</p>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-lg font-semibold text-slate-900">Company Hierarchy</h3>
+        <p className="mt-1 text-sm text-slate-600">View the organizational structure. Admins can edit from the Admin page.</p>
+        <div className="mt-4">
+          <UserTree tree={tree} currentUserRole={user?.role} currentUserId={user?.id} onEdit={(id) => { if (user?.role === 'ADMIN') navigate('/admin/users'); }} />
         </div>
       </section>
 

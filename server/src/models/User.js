@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     password: { type: DataTypes.STRING, allowNull: false },
     role: { type: DataTypes.ENUM('ADMIN', 'STAFF', 'MANAGER'), defaultValue: 'STAFF' },
     managerId: { type: DataTypes.UUID, allowNull: true, references: { model: 'Users', key: 'id' } },
+    address: { type: DataTypes.TEXT, allowNull: true },
+    phone: { type: DataTypes.STRING, allowNull: true },
+    photo: { type: DataTypes.STRING, allowNull: true },
     baseSalary: { type: DataTypes.FLOAT, defaultValue: 0 },
     createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }

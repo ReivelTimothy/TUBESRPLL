@@ -12,16 +12,17 @@ export interface PenaltyAttributes {
   id: string;
   userId: string;
   amount: number;
-  reason: string;
+  description: string;
   type: PenaltyType;
   date: Date;
-  createdBy: string; 
+  createdBy: string;
 }
 
 export interface CreatePenaltyRequest {
   userId: string;
   amount: number;
-  reason: string;
+  description?: string;
+  reason?: string;
   type: PenaltyType;
   date?: Date;
 }

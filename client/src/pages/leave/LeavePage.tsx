@@ -65,6 +65,15 @@ const LeavePage: React.FC = () => {
     }
   };
 
+  const canProcessRequest = (request: any) => {
+    if (!user || request.status !== LeaveStatus.PENDING) return false;
+    if (user.role === 'ADMIN') return true;
+    if (user.role === 'MANAGER') {
+      return request.User?.managerId === user.id;
+    }
+    return false;
+  };
+
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-panel">
@@ -113,7 +122,7 @@ const LeavePage: React.FC = () => {
                     <td className="py-2">{r.type || 'PENDING'}</td>
                     <td className="py-2">{r.status}</td>
                     <td className="py-2">
-                      {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && r.status === LeaveStatus.PENDING && (
+                      {canProcessRequest(r) && (
                         <div className="space-x-2">
                           <button className="rounded-lg bg-emerald-600 px-2 py-1 text-white" onClick={() => openProcessModal(r, LeaveStatus.APPROVED)}>Approve</button>
                           <button className="rounded-lg bg-rose-600 px-2 py-1 text-white" onClick={() => openProcessModal(r, LeaveStatus.REJECTED)}>Reject</button>

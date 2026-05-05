@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import type { UserAttributes } from '../types/types';
 import userService from '../services/userService';
 import UserEditModal from './UserEditModal';
+import { useAuth } from '../context/AuthContext';
 
 const UserTable: React.FC = () => {
   const [users, setUsers] = useState<UserAttributes[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<UserAttributes | null>(null);
+  const { user } = useAuth();
 
   const fetch = async () => {
     setLoading(true);
@@ -65,8 +67,12 @@ const UserTable: React.FC = () => {
                 <td className="px-4 py-2">{(u as any).Manager?.name || u.managerId || '-'}</td>
                 <td className="px-4 py-2 text-right">{u.baseSalary ?? 0}</td>
                 <td className="px-4 py-2 text-right">
-                  <button onClick={() => setEditing(u)} className="mr-2 rounded-lg bg-amber-400 px-3 py-1 text-black">Edit</button>
-                  <button onClick={() => handleDelete(u.id)} className="rounded-lg bg-rose-600 px-3 py-1 text-white">Delete</button>
+                  {user?.role === 'ADMIN' && (
+                    <>
+                      <button onClick={() => setEditing(u)} className="mr-2 rounded-lg bg-amber-400 px-3 py-1 text-black">Edit</button>
+                      <button onClick={() => handleDelete(u.id)} className="rounded-lg bg-rose-600 px-3 py-1 text-white">Delete</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

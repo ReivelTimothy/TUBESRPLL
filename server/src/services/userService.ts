@@ -9,6 +9,7 @@ import {
     UserActionResponse,
     UserAttributes 
 } from '../types/user';
+import { UserRole } from '../types/enum';
 
 const User = (db as any).User;
 
@@ -107,4 +108,17 @@ export const deleteUser = async (id: string): Promise<UserActionResponse> => {
 
     await user.destroy();
     return { msg: "User deleted successfully" };
+};
+
+export const getEligibleStaff = async (currentUser: { userId: string; role: UserRole }): Promise<UserAttributes[]> => {
+    const baseWhere: any = { role: UserRole.STAFF };
+
+    if (currentUser.role === UserRole.MANAGER) {
+        baseWhere.managerId = currentUser.userId;
+    }
+
+    return await User.findAll({
+        where: baseWhere,
+        attributes: ['id', 'name', 'email', 'role', 'managerId']
+    });
 };

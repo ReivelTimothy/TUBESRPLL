@@ -10,6 +10,11 @@ export const getAllUsersController = controllerWrapper(async (req: any) => {
     return { result };
 });
 
+export const getEligibleStaffController = controllerWrapper(async (req: TokenPayloadRequest) => {
+    const result = await userService.getEligibleStaff(req.user);
+    return { result };
+});
+
 export const getUserTreeController = controllerWrapper(async (req: any) => {
     const result = await userService.getUserTree();
     return { result };
@@ -40,6 +45,13 @@ export const updateProfileController = controllerWrapper(async (req: TokenPayloa
     }
 
     const result = await userService.updateProfile(id, data);
+    return { result };
+});
+
+export const updateMyProfileController = controllerWrapper(async (req: TokenPayloadRequest) => {
+    const data = req.body;
+    const currentUser = req.user;
+    const result = await userService.updateProfile(currentUser.userId, data);
     return { result };
 });
 

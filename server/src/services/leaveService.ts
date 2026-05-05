@@ -31,7 +31,7 @@ export const requestLeave = async (userId: string, data: CreateLeaveRequest) => 
 export const getLeaveRequests = async (currentUser: TokenPayload) => {
     if (currentUser.role === 'ADMIN') {
         return await Leave.findAll({
-            include: [{ model: User, as: 'User', attributes: ['name', 'role'] }]
+            include: [{ model: User, as: 'User', attributes: ['id', 'name', 'role', 'managerId'] }]
         });
     }
 
@@ -41,14 +41,14 @@ export const getLeaveRequests = async (currentUser: TokenPayload) => {
                 model: User,
                 as: 'User',
                 where: { managerId: currentUser.userId },
-                attributes: ['name']
+                attributes: ['id', 'name', 'role', 'managerId']
             }]
         });
     }
 
     return await Leave.findAll({
         where: { userId: currentUser.userId },
-        include: [{ model: User, as: 'User', attributes: ['name'] }]
+        include: [{ model: User, as: 'User', attributes: ['id', 'name', 'role', 'managerId'] }]
     });
 };
 
@@ -74,7 +74,7 @@ export const processLeave = async (leaveId: string, approver: TokenPayload, data
         throw new ApiError(ERROR_CODES.PERMISSION.FORBIDDEN.code, 'Anda tidak bisa menyetujui pengajuan cuti Anda sendiri.');
     }
 
-    const isManager = leave.User?.managerId === approver.userId;
+    const isManager = approver.role === 'MANAGER' && leave.User?.managerId === approver.userId;
     const isAdmin = approver.role === 'ADMIN';
 
     if (!isAdmin && !isManager) {

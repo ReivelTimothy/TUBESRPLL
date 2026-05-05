@@ -22,6 +22,9 @@ export interface UserAttributes {
   name: string;
   email: string;
   role: UserRole;
+  address?: string | null;
+  phone?: string | null;
+  photo?: string | null;
   managerId?: string | null;
   baseSalary?: number;
   createdAt?: Date;
@@ -145,16 +148,17 @@ export interface PenaltyAttributes {
   id: string;
   userId: string;
   amount: number;
-  reason: string;
+  description: string;
+  reason?: string;
   type: PenaltyType;
   date: string | Date;
-  createdBy: string;
+  createdBy?: string;
 }
 
 export interface CreatePenaltyRequest {
   userId: string;
   amount: number;
-  reason: string;
+  description: string;
   type: PenaltyType;
   date?: string | Date;
 }

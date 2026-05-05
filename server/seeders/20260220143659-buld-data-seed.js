@@ -28,9 +28,9 @@ module.exports = {
 
     // 3. DATA PENALTIES (Denda Barang Rusak/Terlambat)
     await queryInterface.bulkInsert('Penalties', [
-      { id: uuidv4(), userId: userIds[2], type: 'DAMAGED_PROPERTY', amount: 150000, description: 'Layar laptop pecah', status: 'PENDING', createdAt: new Date(), updatedAt: new Date() },
-      { id: uuidv4(), userId: userIds[1], type: 'DAMAGED_PROPERTY', amount: 50000, description: 'Mouse hilang', status: 'APPROVED', createdAt: new Date(), updatedAt: new Date() },
-      { id: uuidv4(), userId: userIds[2], type: 'LATE_PENALTY', amount: 10000, description: 'Terlambat lebih dari 15 menit', status: 'APPROVED', createdAt: new Date(), updatedAt: new Date() }
+      { id: uuidv4(), userId: userIds[3], type: 'DAMAGE', amount: 150000, description: 'Layar laptop pecah', date: new Date('2026-05-03'), createdBy: userIds[1], status: 'PENDING', createdAt: new Date(), updatedAt: new Date() },
+      { id: uuidv4(), userId: userIds[4], type: 'DAMAGE', amount: 50000, description: 'Mouse hilang', date: new Date('2026-05-01'), createdBy: userIds[1], status: 'APPROVED', createdAt: new Date(), updatedAt: new Date() },
+      { id: uuidv4(), userId: userIds[5], type: 'LATE', amount: 10000, description: 'Terlambat lebih dari 15 menit', date: new Date('2026-05-02'), createdBy: userIds[2], status: 'APPROVED', createdAt: new Date(), updatedAt: new Date() }
     ]);
 
     // 4. DATA LEAVES (Cuti)
