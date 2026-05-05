@@ -6,6 +6,11 @@ export const getAllUsers = async (): Promise<UserAttributes[]> => {
   return res.data?.result || res.data || [];
 };
 
+export const getEligibleStaff = async (): Promise<UserAttributes[]> => {
+  const res = await fetchFromAPI('/staff/eligible', 'GET');
+  return res.data?.result || res.data || [];
+};
+
 export const getUserTree = async (): Promise<any> => {
   const res = await fetchFromAPI('/user/tree', 'GET');
   return res.data?.result || res.data || [];
@@ -28,6 +33,7 @@ export const updateProfile = async (id: string, data: UpdateProfileRequest) => {
 
 export default {
   getAllUsers,
+  getEligibleStaff,
   getUserTree,
   updateUser,
   deleteUser,

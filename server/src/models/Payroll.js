@@ -7,8 +7,12 @@ module.exports = (sequelize, DataTypes) => {
     year: { type: DataTypes.INTEGER },
     basicSalary: { type: DataTypes.FLOAT },
     allowances: { type: DataTypes.FLOAT, defaultValue: 0 }, // Bonus/Reimburse
-    deductions: { type: DataTypes.FLOAT, defaultValue: 0 }, // Penalti
-    netSalary: { type: DataTypes.FLOAT } // Hasil akhir
+    totalPenalties: { type: DataTypes.FLOAT, defaultValue: 0 },
+    cappedDeduction: { type: DataTypes.FLOAT, defaultValue: 0 },
+    actualDeduction: { type: DataTypes.FLOAT, defaultValue: 0 },
+    penaltyArrears: { type: DataTypes.FLOAT, defaultValue: 0 },
+    netSalary: { type: DataTypes.FLOAT }, // Hasil akhir
+    status: { type: DataTypes.ENUM('PENDING','READY','DISTRIBUTED'), defaultValue: 'PENDING' }
   });
 
   Payroll.associate = (models) => {

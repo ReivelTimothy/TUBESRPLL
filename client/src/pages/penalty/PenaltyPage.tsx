@@ -19,6 +19,10 @@ const PenaltyPage: React.FC = () => {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [feedback, setFeedback] = useState('');
 
+  const selectedStaff = eligibleStaff.find((s) => s.id === target);
+  const maxSinglePenalty = Number(selectedStaff?.baseSalary || 0) * 0.3;
+  const exceedsSingleCap = Number(amount || 0) > maxSinglePenalty && maxSinglePenalty > 0;
+
   const load = async () => {
     setLoading(true);
     try {
@@ -204,6 +208,16 @@ const PenaltyPage: React.FC = () => {
                   onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : '')}
                   required
                 />
+                {maxSinglePenalty > 0 && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    Max single penalty (30% base salary): {maxSinglePenalty.toLocaleString('id-ID')}
+                  </p>
+                )}
+                {exceedsSingleCap && (
+                  <p className="mt-1 text-xs font-medium text-amber-700">
+                    Amount exceeds max single penalty. System will split into 3 installments automatically.
+                  </p>
+                )}
               </div>
 
               <div>

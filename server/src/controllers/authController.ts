@@ -3,7 +3,8 @@ import * as authService from '../services/authService';
 import { controllerWrapper } from '../utils/controllerWrapper';
 
 export const loginController = controllerWrapper(async (req: Request) => {
-    const result = await authService.login(req.body);
+    const forwarded = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim();
+    const result = await authService.login(req.body, forwarded || req.ip);
     return result;
 });
 

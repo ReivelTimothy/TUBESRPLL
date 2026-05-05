@@ -119,6 +119,6 @@ export const getEligibleStaff = async (currentUser: { userId: string; role: User
 
     return await User.findAll({
         where: baseWhere,
-        attributes: ['id', 'name', 'email', 'role', 'managerId']
+        attributes: ['id', 'name', 'email', 'role', 'managerId', 'baseSalary']
     });
 };

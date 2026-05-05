@@ -12,7 +12,9 @@ import UserManagementPage from './pages/admin/UserManagement';
 import LeavePage from './pages/leave/LeavePage';
 import ReimbursePage from './pages/reimburse/ReimbursePage';
 import PenaltyPage from './pages/penalty/PenaltyPage';
+import PayrollPage from './pages/payroll/PayrollPage';
 import DirectoryPage from './pages/directory/DirectoryPage';
+import AttendancePage from './pages/attendance/AttendancePage';
 
 const RootRedirect = () => {
   const { isAuthenticated, user, loading } = useAuth();
@@ -37,7 +39,9 @@ function App() {
           <Route path="/directory" element={<DirectoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/leave" element={<LeavePage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/reimburse" element={<ReimbursePage />} />
+          <Route path="/payroll" element={<PayrollPage />} />
           <Route path="/penalty" element={<PenaltyPage />} />
 
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>

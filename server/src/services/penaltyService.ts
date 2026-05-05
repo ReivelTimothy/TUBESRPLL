@@ -22,11 +22,42 @@ export const createPenalty = async (issuer: TokenPayload, data: CreatePenaltyReq
         throw new ApiError(ERROR_CODES.PENALTY.CANT_PENALIZE_SELF.code, ERROR_CODES.PENALTY.CANT_PENALIZE_SELF.message);
     }
 
+    const targetUser = await User.findByPk(data.userId);
+    if (!targetUser) {
+        throw new ApiError(ERROR_CODES.USER.NOT_FOUND.code, ERROR_CODES.USER.NOT_FOUND.message);
+    }
+
+    // Guardrail: a single penalty cannot exceed 30% of base salary
+    const maxSinglePenalty = Number(targetUser.baseSalary || 0) * 0.3;
+
     if (issuer.role === 'MANAGER') {
-        const targetUser = await User.findByPk(data.userId);
-        if (!targetUser || targetUser.managerId !== issuer.userId) {
+        if (targetUser.managerId !== issuer.userId) {
             throw new ApiError(ERROR_CODES.PENALTY.NOT_SUBORDINATE.code, ERROR_CODES.PENALTY.NOT_SUBORDINATE.message);
         }
+    }
+
+    if (maxSinglePenalty > 0 && data.amount > maxSinglePenalty) {
+        // Split over 3 installments when amount exceeds single-entry cap
+        const baseInstallment = Math.floor((data.amount / 3) * 100) / 100;
+        const installments = [baseInstallment, baseInstallment, Number((data.amount - baseInstallment * 2).toFixed(2))];
+
+        const created = [];
+        for (let i = 0; i < installments.length; i++) {
+            const p = await Penalty.create({
+                userId: data.userId,
+                amount: installments[i],
+                type: data.type,
+                description: `${description} (installment ${i + 1}/3)`,
+                createdBy: issuer.userId,
+                date: data.date || new Date()
+            });
+            created.push(p.id);
+        }
+
+        return {
+            msg: `Amount exceeds 30% salary cap (${maxSinglePenalty}). Penalty split into 3 installments.`,
+            penaltyId: created[0]
+        };
     }
 
     const penalty = await Penalty.create({

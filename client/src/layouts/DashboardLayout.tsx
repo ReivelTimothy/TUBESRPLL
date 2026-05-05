@@ -11,8 +11,10 @@ type NavItem = {
 const navItems: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/leave', label: 'Leave' },
+  { to: '/attendance', label: 'Attendance' },
   { to: '/reimburse', label: 'Reimburse' },
   { to: '/penalty', label: 'Penalty' },
+  { to: '/payroll', label: 'Payroll' },
   { to: '/profile', label: 'Profile' },
   { to: '/admin/users', label: 'User Management', roles: ['ADMIN'] },
 ];

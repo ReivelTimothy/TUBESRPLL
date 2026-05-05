@@ -162,3 +162,20 @@ export interface CreatePenaltyRequest {
   type: PenaltyType;
   date?: string | Date;
 }
+
+// Payroll
+export interface PayrollRecord {
+  id: string;
+  userId: string;
+  User?: UserAttributes;
+  month?: number;
+  year?: number;
+  basicSalary?: number;
+  allowances?: number;
+  totalPenalties?: number;
+  cappedDeduction?: number;
+  actualDeduction?: number;
+  penaltyArrears?: number;
+  netSalary?: number;
+  status?: string;
+}

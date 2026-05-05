@@ -11,6 +11,9 @@ import penaltyRoute from './routes/penaltyRoute';
 import reimburseRoute from './routes/reimburseRoute';
 import userRoute from './routes/userRoute';
 import staffRoute from './routes/staffRoute';
+import payrollRoute from './routes/payrollRoute';
+import attendanceRoute from './routes/attendanceRoute';
+import { schedulePayrollJobs } from './jobs/payrollCron';
 
 // Load .env agar terbaca di Docker
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -55,6 +58,8 @@ app.use('/reimburse', reimburseRoute);
 app.use('/penalty', penaltyRoute);
 app.use('/penalties', penaltyRoute);
 app.use('/api/penalties', penaltyRoute);
+app.use('/payroll', payrollRoute);
+app.use('/attendance', attendanceRoute);
 app.use(globalErrorHandler);
 
 db.sequelize.authenticate()
@@ -64,6 +69,13 @@ db.sequelize.authenticate()
             console.log(`🚀 Server running on port ${port}`);
             console.log(`📡 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
         });
+                // Start scheduled jobs
+                try {
+                    schedulePayrollJobs();
+                    console.log('✅ Payroll cron scheduled.');
+                } catch (err) {
+                    console.error('Failed to schedule payroll jobs', err);
+                }
     })
     .catch((err: any) => {
         console.error('❌ Database Connection Error:', err);
