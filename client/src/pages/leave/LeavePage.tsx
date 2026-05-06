@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import leaveService from '../../services/leaveService';
 import { LeaveStatus, LeaveType } from '../../types/types';
+import CompanyCalendar from './CompanyCalendar';
 
 const LeavePage: React.FC = () => {
   const { user } = useAuth();
@@ -84,6 +85,8 @@ const LeavePage: React.FC = () => {
       {feedback && (
         <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700">{feedback}</div>
       )}
+
+      <CompanyCalendar />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-panel">
